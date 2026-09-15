@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4efe7">
+  <title>Tratamiento dermatológico | Seguimiento</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap');
+
+    :root {
+      --ink: #20312d;
+      --muted: #68736d;
+      --paper: #f4efe7;
+      --panel: #fffdf8;
+      --line: #ded8ce;
+      --green: #2d6958;
+      --green-light: #dcebe2;
+      --coral: #d66c51;
+      --yellow: #f2d993;
+      --shadow: 0 18px 45px rgba(48, 53, 40, .09);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.45;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      z-index: -1;
+      inset: 0 0 auto;
+      height: 330px;
+      background: linear-gradient(135deg, #dceae0 0%, #f4efe7 62%);
+    }
+
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 42px 0 56px; }
+    .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 42px; }
+    .eyebrow { color: var(--coral); font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    h1, h2, p { margin: 0; }
+    h1 { max-width: 650px; margin-top: 8px; font-family: Fraunces, Georgia, serif; font-size: clamp(2.6rem, 6vw, 5.2rem); font-weight: 600; letter-spacing: 0; line-height: .98; }
+    .intro { max-width: 470px; margin-top: 18px; color: var(--muted); font-size: 1.02rem; }
+    .clock { min-width: 200px; padding: 14px 16px; border: 1px solid rgba(32, 49, 45, .12); border-radius: 8px; background: rgba(255, 253, 248, .64); text-align: right; }
+    .clock strong { display: block; font-size: 1.05rem; }
+    .clock span { color: var(--muted); font-size: .8rem; }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 34px; }
+    .stat { padding: 20px; border-radius: 8px; background: var(--panel); box-shadow: var(--shadow); }
+    .stat-value { display: block; margin-bottom: 2px; font-family: Fraunces, Georgia, serif; font-size: 2rem; }
+    .stat-label { color: var(--muted); font-size: .82rem; }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .8fr); gap: 22px; align-items: start; }
+    .section { padding: 26px; border: 1px solid rgba(32, 49, 45, .1); border-radius: 8px; background: var(--panel); box-shadow: var(--shadow); }
+    .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+    h2 { font-family: Fraunces, Georgia, serif; font-size: 1.65rem; font-weight: 600; }
+    .section-heading span { color: var(--muted); font-size: .8rem; }
+
+    .next-dose { position: relative; overflow: hidden; margin-bottom: 18px; padding: 22px; border-radius: 8px; color: #fffdf8; background: var(--green); }
+    .next-dose::after { content: ''; position: absolute; top: -45px; right: -25px; width: 150px; height: 150px; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; }
+    .next-label { position: relative; z-index: 1; color: #b9daca; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .next-time { position: relative; z-index: 1; display: block; margin: 5px 0 8px; font-family: Fraunces, Georgia, serif; font-size: 2.7rem; line-height: 1; }
+    .next-date { position: relative; z-index: 1; color: #dcebe2; font-size: .84rem; }
+    .next-meds { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 7px; margin: 18px 0; }
+    .med-pill { padding: 5px 9px; border: 1px solid rgba(255,255,255,.23); border-radius: 99px; color: #fffdf8; font-size: .78rem; }
+    button { font: inherit; cursor: pointer; }
+    .action { border: 0; border-radius: 6px; padding: 11px 15px; color: var(--ink); background: var(--yellow); font-size: .82rem; font-weight: 700; }
+    .action:hover { filter: brightness(.97); }
+    .empty { padding: 28px 4px; color: var(--muted); }
+
+    .dose-list { display: grid; gap: 8px; }
+    .dose { display: grid; grid-template-columns: 68px 1fr auto; gap: 14px; align-items: center; padding: 13px 12px; border-top: 1px solid var(--line); }
+    .dose:first-child { border-top: 0; }
+    .dose-time { font-size: .9rem; font-weight: 700; }
+    .dose-date { color: var(--muted); font-size: .7rem; }
+    .dose-name { font-size: .91rem; font-weight: 600; }
+    .dose-detail { margin-top: 2px; color: var(--muted); font-size: .76rem; }
+    .taken { border-radius: 5px; padding: 6px 9px; color: var(--green); background: var(--green-light); font-size: .7rem; font-weight: 700; }
+    .dose-check { display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 9px; color: var(--muted); background: transparent; font-size: .72rem; }
+    .dose-check:hover { border-color: var(--green); color: var(--green); }
+    .dose-check input { accent-color: var(--green); }
+
+    .today-date { margin-bottom: 18px; color: var(--muted); font-size: .85rem; }
+    .today-list { display: grid; gap: 12px; }
+    .today-item { display: grid; grid-template-columns: 60px 1fr; gap: 12px; align-items: start; }
+    .today-item time { padding-top: 3px; color: var(--coral); font-size: .8rem; font-weight: 700; }
+    .today-item-content { padding-left: 12px; border-left: 2px solid var(--line); }
+    .today-item.current .today-item-content { border-color: var(--coral); }
+    .today-item strong { display: block; font-size: .84rem; }
+    .today-item p { margin-top: 2px; color: var(--muted); font-size: .74rem; }
+    .legend { display: flex; gap: 15px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .72rem; }
+    .legend span::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: var(--coral); }
+    .legend span:last-child::before { background: var(--green); }
+    .footer { display: flex; justify-content: space-between; gap: 18px; margin-top: 20px; color: var(--muted); font-size: .72rem; }
+    .reset { border: 0; padding: 0; color: var(--coral); background: none; font-size: .72rem; text-decoration: underline; }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 28px, 600px); padding-top: 28px; }
+      .topbar { display: block; margin-bottom: 28px; }
+      .clock { width: fit-content; margin-top: 20px; text-align: left; }
+      .stats { gap: 8px; }
+      .stat { padding: 15px 12px; }
+      .stat-value { font-size: 1.55rem; }
+      .stat-label { font-size: .7rem; }
+      .layout { grid-template-columns: 1fr; }
+      .section { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Plan de medicación</div>
+        <h1>Tratamiento dermatológico</h1>
+        <p class="intro">Una vista clara de lo que sigue, para que cada toma tenga su momento.</p>
+      </div>
+      <div class="clock" aria-live="polite">
+        <strong id="current-time">--:--</strong>
+        <span id="current-date">Cargando fecha...</span>
+      </div>
+    </header>
+
+    <section class="stats" aria-label="Resumen del tratamiento">
+      <div class="stat"><span class="stat-value" id="remaining-count">--</span><span class="stat-label">dosis programadas restantes</span></div>
+      <div class="stat"><span class="stat-value" id="taken-count">0</span><span class="stat-label">dosis marcadas hoy</span></div>
+      <div class="stat"><span class="stat-value" id="days-count">--</span><span class="stat-label">días para terminar</span></div>
+    </section>
+
+    <div class="layout">
+      <section class="section" aria-labelledby="next-heading">
+        <div class="section-heading"><h2 id="next-heading">Lo próximo</h2><span id="next-counter"></span></div>
+        <div id="next-dose"></div>
+        <div class="section-heading"><h2>Después</h2><span>Próximas dosis</span></div>
+        <div class="dose-list" id="upcoming-list"></div>
+      </section>
+
+      <section class="section" aria-labelledby="today-heading">
+        <div class="section-heading"><h2 id="today-heading">Hoy</h2><span id="today-status"></span></div>
+        <p class="today-date" id="today-date"></p>
+        <div class="today-list" id="today-list"></div>
+        <div class="legend"><span>Próxima</span><span>Marcada</span></div>
+        <div class="footer"><span>Los cambios quedan guardados en este dispositivo.</span><button class="reset" id="reset-button">Borrar marcas</button></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const treatment = [
+      ['2026-09-15', [['14:00', 'Cefalexina', '1 cap'], ['18:00', 'Dolex', '2 tabs'], ['20:00', 'Motrin + Cefalexina + Fucicort', '1 tab + 1 cap + crema'], ['02:00', 'Dolex + Cefalexina', '2 tabs + 1 cap', 1]]],
+      ['2026-09-16', [['08:00', 'Motrin + Cefalexina + Fucicort', '1 tab + 1 cap + crema'], ['10:00', 'Dolex', '2 tabs'], ['14:00', 'Cefalexina', '1 cap'], ['18:00', 'Dolex', '2 tabs'], ['20:00', 'Motrin + Cefalexina + Fucicort', '1 tab + 1 cap + crema'], ['02:00', 'Dolex + Cefalexina', '2 tabs + 1 cap', 1]]],
+      ['2026-09-17', [['08:00', 'Motrin + Cefalexina + Fucicort', '1 tab + 1 cap + crema'], ['10:00', 'Dolex', '2 tabs'], ['14:00', 'Cefalexina', '1 cap'], ['18:00', 'Dolex', '2 tabs'], ['20:00', 'Motrin + Cefalexina + Fucicort', '1 tab + 1 cap + crema'], ['02:00', 'Dolex + Cefalexina', '2 tabs + 1 cap', 1]]],
+      ['2026-09-18', [['08:00', 'Motrin + Cefalexina + Fucicort', '1 tab + 1 cap + crema'], ['10:00', 'Dolex', '2 tabs'], ['14:00', 'Cefalexina', '1 cap'], ['18:00', 'Dolex', '2 tabs'], ['20:00', 'Cefalexina + Fucicort', '1 cap + crema'], ['02:00', 'Dolex + Cefalexina', '2 tabs + 1 cap', 1]]],
+      ['2026-09-19', [['08:00', 'Cefalexina + Fucicort', '1 cap + crema'], ['10:00', 'Dolex', '2 tabs'], ['14:00', 'Cefalexina', '1 cap'], ['18:00', 'Dolex', '2 tabs'], ['20:00', 'Cefalexina + Fucicort', '1 cap + crema'], ['02:00', 'Dolex + Cefalexina', '2 tabs + 1 cap', 1]]],
+      ['2026-09-20', [['08:00', 'Cefalexina + Fucicort', '1 cap + crema'], ['10:00', 'Dolex', '2 tabs'], ['14:00', 'Cefalexina', '1 cap'], ['18:00', 'Dolex', '2 tabs'], ['20:00', 'Cefalexina + Fucicort', '1 cap + crema'], ['02:00', 'Dolex + Cefalexina', '2 tabs + 1 cap', 1]]],
+      ['2026-09-21', [['08:00', 'Cefalexina + Fucicort', '1 cap + crema'], ['10:00', 'Dolex', '2 tabs'], ['14:00', 'Cefalexina', '1 cap'], ['18:00', 'Dolex', '2 tabs'], ['20:00', 'Cefalexina + Fucicort', '1 cap + crema'], ['02:00', 'Dolex + Cefalexina', '2 tabs + 1 cap', 1]]],
+      ['2026-09-22', [['08:00', 'Cefalexina + Fucicort', '1 cap + crema'], ['10:00', 'Dolex', '2 tabs'], ['20:00', 'Fucicort', 'crema']]],
+      ['2026-09-23', [['08:00', 'Fucicort', 'crema'], ['20:00', 'Fucicort', 'crema']]],
+      ['2026-09-24', [['08:00', 'Fucicort', 'crema'], ['20:00', 'Fucicort', 'crema']]],
+      ['2026-09-25', [['08:00', 'Fucicort', 'crema']]]
+    ];
+
+    const formatter = new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const shortDate = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short' });
+    const stateKey = 'dermatology-treatment-taken';
+    let taken = JSON.parse(localStorage.getItem(stateKey) || '{}');
+
+    function getDoses() {
+      return treatment.flatMap(([date, doses]) => doses.map(([time, name, detail, nextDay]) => {
+        const [hours, minutes] = time.split(':').map(Number);
+        const dateValue = new Date(`${date}T${time}:00`);
+        if (nextDay) dateValue.setDate(dateValue.getDate() + 1);
+        return { id: `${date}-${time}-${name}`, date, time, name, detail, dateValue };
+      }));
+    }
+
+    const doses = getDoses();
+    const dateOnly = value => `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
+    const timeLabel = value => value.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });
+    const dateLabel = value => formatter.format(value).replace(/^./, letter => letter.toUpperCase());
+    const save = () => localStorage.setItem(stateKey, JSON.stringify(taken));
+
+    function doseRow(dose, now) {
+      const isTaken = Boolean(taken[dose.id]);
+      return `<div class="dose ${isTaken ? 'is-taken' : ''}">
+        <div><div class="dose-time">${timeLabel(dose.dateValue)}</div><div class="dose-date">${shortDate.format(dose.dateValue)}</div></div>
+        <div><div class="dose-name">${dose.name}</div><div class="dose-detail">${dose.detail}</div></div>
+        ${isTaken ? '<span class="taken">Tomada</span>' : `<label class="dose-check"><input type="checkbox" data-dose="${dose.id}"> marcar</label>`}
+      </div>`;
+    }
+
+    function render() {
+      const now = new Date();
+      const future = doses.filter(dose => dose.dateValue >= now && !taken[dose.id]);
+      const today = doses.filter(dose => dateOnly(dose.dateValue) === dateOnly(now));
+      const next = future[0];
+      document.querySelector('#current-time').textContent = timeLabel(now);
+      document.querySelector('#current-date').textContent = dateLabel(now);
+      document.querySelector('#remaining-count').textContent = future.length;
+      document.querySelector('#taken-count').textContent = today.filter(dose => taken[dose.id]).length;
+      const lastDose = doses[doses.length - 1].dateValue;
+      document.querySelector('#days-count').textContent = Math.max(0, Math.ceil((lastDose - now) / 86400000));
+      document.querySelector('#today-date').textContent = dateLabel(now);
+      document.querySelector('#today-status').textContent = `${today.filter(dose => taken[dose.id]).length} de ${today.length} marcadas`;
+
+      const nextPanel = document.querySelector('#next-dose');
+      if (!next) {
+        nextPanel.innerHTML = '<div class="empty">El tratamiento ya terminó. No hay dosis pendientes.</div>';
+        document.querySelector('#next-counter').textContent = '';
+      } else {
+        nextPanel.innerHTML = `<div class="next-dose"><div class="next-label">Siguiente toma</div><strong class="next-time">${timeLabel(next.dateValue)}</strong><div class="next-date">${dateLabel(next.dateValue)}</div><div class="next-meds">${next.name.split(' + ').map(name => `<span class="med-pill">${name}</span>`).join('')}</div><button class="action" data-dose="${next.id}">Marcar como tomada</button></div>`;
+        document.querySelector('#next-counter').textContent = `${future.length} pendientes`;
+      }
+      document.querySelector('#upcoming-list').innerHTML = future.slice(1, 5).map(dose => doseRow(dose, now)).join('') || '<div class="empty">No hay más dosis programadas.</div>';
+      document.querySelector('#today-list').innerHTML = today.map(dose => `<div class="today-item ${dose === next ? 'current' : ''}"><time>${timeLabel(dose.dateValue)}</time><div class="today-item-content"><strong>${dose.name}</strong><p>${dose.detail}${taken[dose.id] ? ' · Tomada' : ''}</p></div></div>`).join('') || '<div class="empty">No hay dosis programadas para hoy.</div>';
+      document.querySelectorAll('[data-dose]').forEach(element => element.addEventListener('click', event => {
+        const id = event.currentTarget.dataset.dose;
+        const input = event.currentTarget.querySelector('input');
+        if (input && !input.checked) return;
+        taken[id] = true;
+        save();
+        render();
+      }));
+    }
+
+    document.querySelector('#reset-button').addEventListener('click', () => {
+      if (confirm('¿Borrar todas las marcas de este dispositivo?')) {
+        taken = {};
+        save();
+        render();
+      }
+    });
+    render();
+    setInterval(render, 60000);
+  </script>
+</body>
+</html>
