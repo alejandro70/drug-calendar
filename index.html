@@ -183,6 +183,7 @@
     const timeLabel = value => value.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });
     const dateLabel = value => formatter.format(value).replace(/^./, letter => letter.toUpperCase());
     const save = () => localStorage.setItem(stateKey, JSON.stringify(taken));
+    const graceWindowMs = 10 * 60 * 1000;
 
     function doseRow(dose, now) {
       const isTaken = Boolean(taken[dose.id]);
@@ -195,7 +196,12 @@
 
     function render() {
       const now = new Date();
-      const future = doses.filter(dose => dose.dateValue >= now && !taken[dose.id]);
+      const future = doses.filter(dose => {
+        if (taken[dose.id]) return false;
+        const dueTime = dose.dateValue.getTime();
+        const withinGrace = now.getTime() >= dueTime && now.getTime() < dueTime + graceWindowMs;
+        return dose.dateValue >= now || withinGrace;
+      });
       const today = doses.filter(dose => dateOnly(dose.dateValue) === dateOnly(now));
       const next = future[0];
       document.querySelector('#current-time').textContent = timeLabel(now);
